@@ -6,7 +6,48 @@ class Item {
   }
 }
 
+class DecoratedItem extends Item {
+  constructor({name, sellIn, quality, policy}) {
+    super(name, sellIn, quality)
+    this.policy = policy
+
+  }
+  updateQuality() {
+    this.sellIn = this.sellIn - 1
+    this.quality = this.policy.execute({sellIn: this.sellIn, quality: this.quality});
+  }
+}
+
+class Policy {
+  constructor() {}
+  execute({sellIn, quality}) {
+    throw new Error("You should implement this method");
+  }
+}
+
+class AgedBriePolicy extends Policy {
+  execute({sellIn, quality}) {
+    return quality + 1
+  }
+}
+
+class AgedBrie extends DecoratedItem {
+  constructor({sellIn, quality}) {
+    super({name: "Aged Brie", sellIn, quality, policy: new AgedBriePolicy});
+  }
+}
+
 class Shop {
+  constructor(items=[]){
+    this.items = items;
+  }
+  updateQuality() {
+    this.items.forEach(item => item.updateQuality());
+    return this.items;
+  }
+}
+
+class ShopOld {
   constructor(items=[]){
     this.items = items;
   }
@@ -62,5 +103,7 @@ class Shop {
 }
 module.exports = {
   Item,
-  Shop
+  AgedBrie,
+  Shop,
+  ShopOld,
 }
